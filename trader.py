@@ -36,3 +36,4 @@
 
 #rerun code 
 print("This is my trading bot")
+#test push fro git
