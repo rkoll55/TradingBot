@@ -23,9 +23,9 @@ class Trader:
             return False 
 
     def set_stoploss(self, entryPrice, Direction):
-    #Set stoploss: takes price and sets stoploss depending on direction
-        #IN: entryPrice and Direction (long or short)
-        #OUT: stop loss
+        #Set stoploss: takes price and sets stoploss depending on direction
+            #IN: entryPrice and Direction (long or short)
+            #OUT: stop loss
         try:
             if Direction == 'long':
                 stopLoss = entryPrice - entryPrice * self.StopLossMargin 
@@ -41,9 +41,9 @@ class Trader:
         
 
     def take_profit(self, entryPrice, Direction):
-    #Set takeprofit: takes price and sets the takeprofit
-        #IN: entryPrice and Direction (long or short)
-        #OUT: take profit 
+        #Set takeprofit: takes price and sets the takeprofit
+            #IN: entryPrice and Direction (long or short)
+            #OUT: take profit 
         try:
             if Direction == 'long':
                 takeProfit = entryPrice + entryPrice * self.TakeProfitMargin 
@@ -58,11 +58,18 @@ class Trader:
             sys.exit()
         
 
-    #load historical data
+    #load historical data ####
 
-    #get open positions
-        #IN: ticker 
-        #OUT: boolean 
+    def get_open_positions(self, assetId):
+        #get open positions
+            #IN: ticker 
+            #OUT: boolean 
+        #positions = ask alpaca wrapper for list of open positions 
+        for position in positions:
+            if position.symbol == assetId:
+                return True
+            else:
+                return False
 
     #submit order: gets our order throught the API 
         #IN order data, order type
