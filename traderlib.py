@@ -58,4 +58,3 @@
     #if false keepy retrying 
 
 #rerun code 
-print("This is my trading bot") 
