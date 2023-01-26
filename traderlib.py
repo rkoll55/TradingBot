@@ -1,8 +1,21 @@
 from logger import * 
 #define asset
 class Trader:
-    def __init__(self):
-        logging.info('Trader initialized')
+    def __init__(self, ticker):
+        logging.info('Trader initialized with %s' %ticker)
+
+    #check if tradable: ask the broker/API if asset is tradable 
+        #IN: asset
+        #OUT: Boolean 
+
+    #Set stoploss: takes price and sets stoploss 
+    #Set takeprofit: takes price and sets the takeprofit
+
+    #load historical data
+
+    #get open positions
+        #IN: ticker 
+        #OUT: boolean 
 
     def run():
         pass

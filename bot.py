@@ -20,7 +20,7 @@ def clean_open_orders():
     logging.info("closing orders complete")
 
 
-#call trading bot
+#call trading botf
     #IN: string 
     #OUT boolean 
 def  main():
