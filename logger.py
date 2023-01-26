@@ -2,6 +2,8 @@ import logging
 import os 
 from datetime import datetime
 
+### MAKE LOGGER WORK IN SEPERATE THREAD FOR COMP   
+
 def initialise_logger():
     logs_path = './logs/' #defines the path 
     try:
