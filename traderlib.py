@@ -1,5 +1,10 @@
 from logger import * 
-import sys 
+import sys, os , time , pytz
+import tulipy as ti
+import pandas as pd 
+from datetime import datetime 
+from math import ceil 
+
 #define asset
 class Trader:
     def __init__(self, ticker):
@@ -79,9 +84,26 @@ class Trader:
         #IN order data
         #OUT Boolean
          
+    def check_position(self, asset):
     #Check Position (whether its open or not)
         #IN ticker
         #OUT Boolean
+        attempt = 0
+        maxAttempts = 5
+
+        while attempt < maxAttempts:
+            try:
+                #position = ask alpaca wrapper for position
+                currentPrice = position.current_price
+                logging.info('Position checked. Current price is: %.2f' % currentPrice)
+                return True
+            except: 
+                logging.info('Waiting for position to be found')
+                time.sleep(5000)
+                attempt += 1
+        
+        logging.info('Position not found')
+        return False 
 
     #Get general trend 
         #IN: 30 minute candles data
