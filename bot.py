@@ -5,7 +5,7 @@ import sys
 
 #check our trading account and make general API calls 
 def check_account():
-    try:
+    try: 
         pass
     except Exception as e:
         logging.error('Count not get info')
@@ -14,9 +14,9 @@ def check_account():
 #close current orders
 def clean_open_orders():
     logging.info('List of open orders')
-    logging.info(str(open_orders))
-    for order in open_orders:
-        logging.info('Order %s closed' % str(order.id))
+    #logging.info(str(open_orders))
+    #for order in open_orders:
+        #logging.info('Order %s closed' % str(order.id))
     logging.info("closing orders complete")
 
 
@@ -29,6 +29,7 @@ def  main():
     check_account()
     clean_open_orders()
     ticker = input("Write the ticker you want to trade with:")
+    trader = Trader(ticker)
 
 if __name__ == '__main__':
     main()

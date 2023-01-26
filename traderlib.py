@@ -1,5 +1,11 @@
+from logger import * 
 #define asset
+class Trader:
+    def __init__(self):
+        logging.info('Trader initialized')
 
+    def run():
+        pass
 #LOOP until timeout reached (2h)
 #INITIAL CHECK
 #check the position: check if we have open position with asset
