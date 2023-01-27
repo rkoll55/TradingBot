@@ -99,19 +99,109 @@ class Trader:
                 return True
             except: 
                 logging.info('Waiting for position to be found')
-                time.sleep(5000)
+                time.sleep(5)
                 attempt += 1
         
         logging.info('Position not found')
         return False 
 
+    def get_general_trend(self, asset):
     #Get general trend 
         #IN: 30 minute candles data
         #OUTPUT: UP/ DOWN/ NO TREND
+        attempt = 1
+        maxAttempts = 10
+        try:
+            while True:
 
+                #ask for 30 minute candles
+                #ema9 = ti.ema(data,9)
+                #ema26 = ti.ema(data,26)
+                #ema50 = ti.ema(data,50)
+                
+            #Check EMAs relative position if ema50 > ema26 > ema9
+                logging.info('Trend detected for %s: long'%asset)
+                return 'long'
+                #if ema50 < ema26 < ema9
+                logging.info('Trend detected for %s: short'%asset)
+                return 'short'
+                #if attempts <= maxAttemptL
+                logging.info('Trend not cl ear for %s: short'%asset)
+                time.sleep(60)
+                #else 
+                logging.info('Trend not detected for %s'%asset)
+                return 'no trend'
+        except Exception as e:
+            logging.error("Something went wrong with get general trend")
+            logging.error(e)
+            sys.exit()
+
+    def get_instant_trend(self, asset, trend):
+    #Get instant trend 
+        #IN: 5 minute candles data
+        #OUTPUT: UP/ DOWN/ NO TREND
+
+        #ask for 30 minute candles
+        #ema9 = ti.ema(data,9)
+        #ema26 = ti.ema(data,26)
+        #ema50 = ti.ema(data,50)
+        #logging.info('%s instant trend EMAs = [%.2f,%.2f,%.2f]'%(asset,ema9,ema26,ema50))
+        attempt = 1
+        maxAttempts = 10
+
+        try:
+
+            while True:
+                if trend == 'long': #and ema9 > ema 26 and ema26 > ema50
+                    logging.info('Trend detected for %s: long'%asset)
+                    return True
+
+                elif trend == 'short': #and ema9 < ema 26 and ema26 < ema50
+                    logging.info('Trend detected for %s: short'%asset)
+                    return True
+                elif attempt <= maxAttempts:
+                    time.sleep(60)
+
+                else:
+                    logging.info('No trend detected')
+                    return False
+            
+        except Exception as e:
+            logging.error("Something went wrong with get instant trend")
+            logging.error(e)
+            sys.exit()
+
+    def get_rsi(self,asset,trend):
     #Get RSI
         #IN: 5 minute candles data, output of the GT analysus
         #OUT: True/ False
+        attempt = 1
+        maxAttempts = 10
+
+        try:
+            while True:
+                #calculate the RSI
+                #rsi = ti.rsi(data,14)
+
+                if trend == 'long': #and rsi > 50 and rsi <80
+                    logging.info('Trend detected for %s: long'%asset)
+                    return True
+
+                elif trend == 'short': #and rsi < 50 and rsi > 20
+                    logging.info('Trend detected for %s: short'%asset)
+                    return True
+                elif attempt <= maxAttempts:
+                    time.sleep(60)
+
+                else:
+                    logging.info('No trend detected')
+                    return False
+            
+        except Exception as e:
+            logging.error("Something went wrong with rsi")
+            logging.error(e)
+            sys.exit()
+
 
     #Get Stochastic
         #IN: 5 minute candles data, output of the GT analysus
