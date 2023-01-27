@@ -171,9 +171,37 @@ class Trader:
             logging.error(e)
             sys.exit()
 
+    def get_rsi(self,asset,trend):
     #Get RSI
         #IN: 5 minute candles data, output of the GT analysus
         #OUT: True/ False
+        attempt = 1
+        maxAttempts = 10
+
+        try:
+            while True:
+                #calculate the RSI
+                #rsi = ti.rsi(data,14)
+
+                if trend == 'long': #and rsi > 50 and rsi <80
+                    logging.info('Trend detected for %s: long'%asset)
+                    return True
+
+                elif trend == 'short': #and rsi < 50 and rsi > 20
+                    logging.info('Trend detected for %s: short'%asset)
+                    return True
+                elif attempt <= maxAttempts:
+                    time.sleep(60)
+
+                else:
+                    logging.info('No trend detected')
+                    return False
+            
+        except Exception as e:
+            logging.error("Something went wrong with rsi")
+            logging.error(e)
+            sys.exit()
+
 
     #Get Stochastic
         #IN: 5 minute candles data, output of the GT analysus
