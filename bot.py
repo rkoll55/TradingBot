@@ -30,7 +30,7 @@ def  main():
     clean_open_orders()
     ticker = input("Write the ticker you want to trade with:")
     trader = Trader(ticker)
-    complete_trading = trader.run(ticker)
+    complete_trading = trader.run()
 
     if not complete_trading:
         logging.info("Trading unsuccesful")

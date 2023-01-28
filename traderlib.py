@@ -11,6 +11,7 @@ class Trader:
         logging.info('Trader initialized with %s' %ticker)
         self.StopLossMargin = 0.05
         self.TakeProfitMargin = 0.1
+        self.asset = ticker
 
     def is_tradable(self, ticker):
         #check if tradable: ask the broker/API if asset is tradable 
@@ -145,7 +146,7 @@ class Trader:
     def get_general_trend(self, asset):
     #Get general trend 
         #IN: 30 minute candles data
-        #OUTPUT: UP/ DOWN/ NO TREND
+        #OUTPUT: UP/ DOWN/ False
         attempt = 1
         maxAttempts = 10
         try:
@@ -167,7 +168,7 @@ class Trader:
                 time.sleep(60)
                 #else 
                 logging.info('Trend not detected for %s'%asset)
-                return 'no trend'
+                return False
         except Exception as e:
             logging.error("Something went wrong with get general trend")
             logging.error(e)
@@ -331,36 +332,46 @@ class Trader:
             logging.error(e)
             return True
 
-    def run(self,asset):
+    def run(self):
         
         #LOOP until timeout reached (2h)
         #INITIAL CHECK
 
         #POINT A
         #check the position: check if we have open position with asset
-        if self.check_position(asset, True):
+        if self.check_position(self.asset, True):
             logging.info('Thre is already and open position with this asset, aborting')
             return False
 
+        #POINT B
         #GENERAL TREND
-        #load 30 minute candles: demand API 30 minute candles
-
         #perform general trend analysis: Detect if its going up/down/no trend 
             #if no trend go back to begenning 
+        while True:
+            trend = self.get_general_trend(self.asset)
+            if not trend:
+                logging.info('No general trend found')
+                return False
 
-            #LOOP until timeout reached (30 minutes)
-            #load 5 minute candles
-                #IN: asset, time range, candle size
-                #OUT: 5 min candles
-            #perfrom instant trend analysis
-                #IN: 30 minute candle data, output of general trend analysis 
-                #OUT: True (confirmed), / False (Not confirmed)
-
-            #perform RSI analysis
-                
-            #perform stochastic analysis
-                
-
+            
+            #Confirm instant trend
+            if not self.get_instant_trend(self.asset,trend):
+                logging.info("instant trend not confirmed, going back")
+            # IF FAILED GO BACK TO POINT B
+                continue
+            #Confirm RSI 
+            if not self.get_rsi(self.asset,trend):
+                logging.info("rsi not confirmed, going back")
+            # IF FAILED GO BACK TO POINT B
+                continue
+            #Confirm stochastic trend
+            if not self.get_stochastic(self.asset,trend):
+                logging.info("stochastic not confirmed, going back")
+            # IF FAILED GO BACK TO POINT B
+                continue
+            logging.info("all filtering passed")
+            break
+            
         #SUBMIT ORDER
         # submit order: interact with broker API
             #if False, abort - go back to start
