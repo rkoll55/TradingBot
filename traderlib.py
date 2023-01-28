@@ -336,53 +336,60 @@ class Trader:
         
         #LOOP until timeout reached (2h)
         #INITIAL CHECK
-
-        #POINT A
-        #check the position: check if we have open position with asset
-        if self.check_position(self.asset, True):
-            logging.info('Thre is already and open position with this asset, aborting')
-            return False
-
-        #POINT B
-        #GENERAL TREND
-        #perform general trend analysis: Detect if its going up/down/no trend 
-            #if no trend go back to begenning 
         while True:
-            trend = self.get_general_trend(self.asset)
-            if not trend:
-                logging.info('No general trend found')
+            #POINT A
+            #check the position: check if we have open position with asset
+            if self.check_position(self.asset, True):
+                logging.info('Thre is already and open position with this asset, aborting')
                 return False
 
-            
-            #Confirm instant trend
-            if not self.get_instant_trend(self.asset,trend):
-                logging.info("instant trend not confirmed, going back")
-            # IF FAILED GO BACK TO POINT B
+            #POINT B
+            #GENERAL TREND
+            #perform general trend analysis: Detect if its going up/down/no trend 
+                #if no trend go back to begenning 
+            while True:
+                trend = self.get_general_trend(self.asset)
+                if not trend:
+                    logging.info('No general trend found')
+                    return False
+
+                
+                #Confirm instant trend
+                if not self.get_instant_trend(self.asset,trend):
+                    logging.info("instant trend not confirmed, going back")
+                # IF FAILED GO BACK TO POINT B
+                    continue
+                #Confirm RSI 
+                if not self.get_rsi(self.asset,trend):
+                    logging.info("rsi not confirmed, going back")
+                # IF FAILED GO BACK TO POINT B
+                    continue
+                #Confirm stochastic trend
+                if not self.get_stochastic(self.asset,trend):
+                    logging.info("stochastic not confirmed, going back")
+                # IF FAILED GO BACK TO POINT B
+                    continue
+                logging.info("all filtering passed")
+                break
+            #Gets the current price
+            self.currentPrice = self.get_current_price(self.asset)
+            sharesQuantity = self.get_shares_amount(self.currentPrice)
+
+            #SUBMIT ORDER
+            # submit order: interact with broker API
+                #if False, abort - go back to start
+
+            #check position see if the position exists
+            if not self.check_position(self.asset):
+                #cancel the pending order
                 continue
-            #Confirm RSI 
-            if not self.get_rsi(self.asset,trend):
-                logging.info("rsi not confirmed, going back")
-            # IF FAILED GO BACK TO POINT B
-                continue
-            #Confirm stochastic trend
-            if not self.get_stochastic(self.asset,trend):
-                logging.info("stochastic not confirmed, going back")
-            # IF FAILED GO BACK TO POINT B
-                continue
-            logging.info("all filtering passed")
-            break
-            
-        #SUBMIT ORDER
-        # submit order: interact with broker API
-            #if False, abort - go back to start
+                #if False, abort - go back to start
 
-        #check positionL see if the position exists
+            #LOOP until timeout reached (large amount of time)
+            #ENTER POSITION
 
-        #LOOP until timeout reached (large amount of time)
-        #ENTER POSITION
+            #GET OUT
+            #submit order
+                #if false keepy retrying 
 
-        #GET OUT
-        #submit order
-            #if false keepy retrying 
-
-        #rerun code 
+            #rerun code 
