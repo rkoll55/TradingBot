@@ -84,9 +84,9 @@ class Trader:
         #IN order data
         #OUT Boolean
          
-    def check_position(self, asset):
+    def check_position(self, asset, notFound=False):
     #Check Position (whether its open or not)
-        #IN ticker
+        #IN ticker, wether the asset should be found on not true means it should not
         #OUT Boolean
         attempt = 1
         maxAttempts = 5
@@ -98,12 +98,28 @@ class Trader:
                 logging.info('Position checked. Current price is: %.2f' % currentPrice)
                 return True
             except: 
+                if notFound:
+                    logging.info('Position not found, this is good')
+                    return False
+
                 logging.info('Waiting for position to be found')
                 time.sleep(5)
                 attempt += 1
         
         logging.info('Position not found')
         return False 
+
+    def get_shares_amount(self,assetPrice):
+        #works out number of shares to buy and sell
+        #IN: assetProce
+        #OUT: number of shares
+
+        #define max to spend
+        maxSpendEquity = 1000
+        #calculate total equity from Alpaca API
+        #calculate the number of shares
+        totalShares = int(maxSpendEquity / assetPrice)
+        return totalShares
 
     def get_current_price(self,asset):
         #Get the current price of the open position
@@ -315,42 +331,47 @@ class Trader:
             logging.error(e)
             return True
 
-    def run(self):
-        pass
-    #LOOP until timeout reached (2h)
-    #INITIAL CHECK
-    #check the position: check if we have open position with asset
+    def run(self,asset):
+        
+        #LOOP until timeout reached (2h)
+        #INITIAL CHECK
 
-    #GENERAL TREND
-    #load 30 minute candles: demand API 30 minute candles
+        #POINT A
+        #check the position: check if we have open position with asset
+        if self.check_position(asset, True):
+            logging.info('Thre is already and open position with this asset, aborting')
+            return False
 
-    #perform general trend analysis: Detect if its going up/down/no trend 
-        #if no trend go back to begenning 
+        #GENERAL TREND
+        #load 30 minute candles: demand API 30 minute candles
 
-        #LOOP until timeout reached (30 minutes)
-        #load 5 minute candles
-            #IN: asset, time range, candle size
-            #OUT: 5 min candles
-        #perfrom instant trend analysis
-            #IN: 30 minute candle data, output of general trend analysis 
-            #OUT: True (confirmed), / False (Not confirmed)
+        #perform general trend analysis: Detect if its going up/down/no trend 
+            #if no trend go back to begenning 
 
-        #perform RSI analysis
-            
-        #perform stochastic analysis
-            
+            #LOOP until timeout reached (30 minutes)
+            #load 5 minute candles
+                #IN: asset, time range, candle size
+                #OUT: 5 min candles
+            #perfrom instant trend analysis
+                #IN: 30 minute candle data, output of general trend analysis 
+                #OUT: True (confirmed), / False (Not confirmed)
 
-    #SUBMIT ORDER
-    # submit order: interact with broker API
-        #if False, abort - go back to start
+            #perform RSI analysis
+                
+            #perform stochastic analysis
+                
 
-    #check positionL see if the position exists
+        #SUBMIT ORDER
+        # submit order: interact with broker API
+            #if False, abort - go back to start
 
-    #LOOP until timeout reached (large amount of time)
-    #ENTER POSITION
+        #check positionL see if the position exists
 
-    #GET OUT
-    #submit order
-        #if false keepy retrying 
+        #LOOP until timeout reached (large amount of time)
+        #ENTER POSITION
 
-    #rerun code 
+        #GET OUT
+        #submit order
+            #if false keepy retrying 
+
+        #rerun code 
