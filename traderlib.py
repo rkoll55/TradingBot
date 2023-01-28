@@ -45,7 +45,7 @@ class Trader:
             sys.exit()
         
 
-    def take_profit(self, entryPrice, Direction):
+    def set_takeprofit(self, entryPrice, Direction):
         #Set takeprofit: takes price and sets the takeprofit
             #IN: entryPrice and Direction (long or short)
             #OUT: take profit 
@@ -88,7 +88,7 @@ class Trader:
     #Check Position (whether its open or not)
         #IN ticker
         #OUT Boolean
-        attempt = 0
+        attempt = 1
         maxAttempts = 5
 
         while attempt < maxAttempts:
@@ -103,6 +103,27 @@ class Trader:
                 attempt += 1
         
         logging.info('Position not found')
+        return False 
+
+    def get_current_price(self,asset):
+        #Get the current price of the open position
+        # IN: Ticker
+        # OUT: price
+        attempt = 1
+        maxAttempts = 5
+
+        while attempt < maxAttempts:
+            try:
+                #position = ask alpaca wrapper for position
+                currentPrice = position.current_price
+                logging.info('Position checked. Current price is: %.2f' % currentPrice)
+                return currentPrice
+            except: 
+                logging.info('Position cannot be found, cannot check price, waiting')
+                time.sleep(5)
+                attempt += 1
+        
+        logging.error('Position not found')
         return False 
 
     def get_general_trend(self, asset):
@@ -202,18 +223,99 @@ class Trader:
             logging.error(e)
             sys.exit()
 
+    def check_stochastic_crossing(self, asset, trend):
+        #check whether the stochastic curves have crossed or not 
+        #depending on trend 
+            #IN: asset, trend
+            #OUT: Boolean 
+        #Get stochastic values 
+        #Ask for 5 minute candles
+        stoch_k, stoch_d = ti.stoch(high,low,close,9,6,9)
+        try:
+            if trend == 'long' and (stoch_k <= stoch_d):
+                logging.info("stoch curves crossed")
+                return True 
+            elif trend == 'short' and (stoch_k >= stoch_d):
+                logging.info("stoch curves crossed")
+                return True 
+            else:
+                return False
+        except Exception as e:
+            logging.error('Something went wrong with check_stochastic_crossing')
+            return True
 
-    #Get Stochastic
+    def get_stochastic(self,asset,trend):
+        #Get Stochastic
         #IN: 5 minute candles data, output of the GT analysus
         #OUT: True/ False
+        attempt = 1
+        maxAttempts = 10
 
+        try:
+            while True:
+                #calculate the Stoch
+                stoch_k, stoch_d = ti.stoch(high,low,close,9,6,9)
+
+                if trend == 'long' and (stoch_k > stoch_d) and (stoch_k < 80) and (stoch_d < 80): 
+                    logging.info('%s stochastic = [%.2f,%.2f]'%(asset,stoch_k, stoch_d))
+                    return True
+
+                elif trend == 'short' and (stoch_k < stoch_d) and (stoch_k > 20) and (stoch_d > 20): 
+                    logging.info('%s stochastic = [%.2f,%.2f]'%(asset,stoch_k, stoch_d))
+                    return True
+                elif attempt <= maxAttempts:
+                    time.sleep(10)
+
+                else:
+                    logging.info('No trend detected')
+                    return False
+            
+        except Exception as e:
+            logging.error("Something went wrong with stoch analysis")
+            logging.error(e)
+            sys.exit()
+
+    def enter_position_mode(self, asset, direction):
     #Enter Position Mode: check positions in paralell
         #check conditions in paralell
         #if check take profit -> get out
         #if check stop loss -> get out 
         #if check stoch crossing (pull 5 minute candle data) -> get out
 
-    def run():
+        #entryprice = ask alpaca
+        takeProfit = self.set_takeprofit(entryprice, direction)
+        stopLoss = self.set_stoploss(entryprice, direction)
+
+        attempt = 1
+        maxAttempts = 1260
+        try:
+            while True:
+                currentPrice = self.get_current_price(asset)
+                #checking the takeprofit
+                if currentPrice >= takeProfit:
+                    logging.info('Take profit met at %.2f, getting out at %.2f'%(takeProfit,currentPrice))
+                    return True
+                #checking the stoploss
+                elif currentPrice <= stopLoss:
+                    logging.info('Stip loss met at %.2f, getting out at %.2f'%(stopLoss,currentPrice))
+                    return True
+                #check if stochastic waves crossed around
+                elif self.check_stochastic_crossing(asset,direction):
+                    logging.info('Stoch curves crossed at %.2f'%currentPrice)
+                    return True
+                elif attempt <= maxAttempts:
+                    logging.info('Waiting inside position')
+                    logging.info('Current price %.2f'%currentPrice)
+                    time.sleep(20) 
+                else:
+                    logging.error('Timeout in enter position mode')
+                    return True
+        except Exception as e:
+            logging.error('Something wrong happened in enter_position_mode function')
+            logging.error(e)
+            return True
+
+    def run(self):
         pass
     #LOOP until timeout reached (2h)
     #INITIAL CHECK
