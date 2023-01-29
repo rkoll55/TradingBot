@@ -28,39 +28,39 @@ class Trader:
             logging.info("Asset %s is not answering well" %ticker)
             return False 
 
-    def set_stoploss(self, entryPrice, Direction):
-        #Set stoploss: takes price and sets stoploss depending on direction
-            #IN: entryPrice and Direction (long or short)
+    def set_stoploss(self, entryPrice, trend):
+        #Set stoploss: takes price and sets stoploss depending on trend
+            #IN: entryPrice and trend (long or short)
             #OUT: stop loss
         try:
-            if Direction == 'long':
+            if trend == 'long':
                 stopLoss = entryPrice - entryPrice * self.StopLossMargin 
                 return stopLoss
-            elif Direction == 'short':
+            elif trend == 'short':
                 stopLoss = entryPrice + entryPrice * self.StopLossMargin 
                 return stopLoss
             else:
                 raise ValueError
         except Exception as e:
-            logging.error("Directional value is not long or short %s" %str(Direction))
+            logging.error("trendal value is not long or short %s" %str(trend))
             sys.exit()
         
 
-    def set_takeprofit(self, entryPrice, Direction):
+    def set_takeprofit(self, entryPrice, trend):
         #Set takeprofit: takes price and sets the takeprofit
-            #IN: entryPrice and Direction (long or short)
+            #IN: entryPrice and trend (long or short)
             #OUT: take profit 
         try:
-            if Direction == 'long':
+            if trend == 'long':
                 takeProfit = entryPrice + entryPrice * self.TakeProfitMargin 
                 return takeProfit
-            elif Direction == 'short':
+            elif trend == 'short':
                 takeProfit = entryPrice - entryPrice * self.TakeProfitMargin 
                 return takeProfit
             else:
                 raise ValueError
         except Exception as e:
-            logging.error("Directional value is not long or short %s" %str(Direction))
+            logging.error("trendal value is not long or short %s" %str(trend))
             sys.exit()
         
 
@@ -292,7 +292,7 @@ class Trader:
             logging.error(e)
             sys.exit()
 
-    def enter_position_mode(self, asset, direction):
+    def enter_position_mode(self, asset, trend):
     #Enter Position Mode: check positions in paralell
         #check conditions in paralell
         #if check take profit -> get out
@@ -300,8 +300,8 @@ class Trader:
         #if check stoch crossing (pull 5 minute candle data) -> get out
 
         #entryprice = ask alpaca
-        takeProfit = self.set_takeprofit(entryprice, direction)
-        stopLoss = self.set_stoploss(entryprice, direction)
+        takeProfit = self.set_takeprofit(entryprice, trend)
+        stopLoss = self.set_stoploss(entryprice, trend)
 
         attempt = 1
         maxAttempts = 1260
@@ -317,7 +317,7 @@ class Trader:
                     logging.info('Stip loss met at %.2f, getting out at %.2f'%(stopLoss,currentPrice))
                     return True
                 #check if stochastic waves crossed around
-                elif self.check_stochastic_crossing(asset,direction):
+                elif self.check_stochastic_crossing(asset,trend):
                     logging.info('Stoch curves crossed at %.2f'%currentPrice)
                     return True
                 elif attempt <= maxAttempts:
@@ -385,11 +385,14 @@ class Trader:
                 continue
                 #if False, abort - go back to start
 
-            #LOOP until timeout reached (large amount of time)
-            #ENTER POSITION
+            ##enter position mode
+            success = self.enter_position_mode(self.asset, trend)
+                #Returns true once we have to get out
 
             #GET OUT
             #submit order
                 #if false keepy retrying 
 
             #rerun code 
+
+            #changing some documentation for testing
