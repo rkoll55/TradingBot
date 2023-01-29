@@ -4,6 +4,7 @@ import tulipy as ti
 import pandas as pd 
 from datetime import datetime 
 from math import ceil 
+import general_variables
 
 #define asset
 class Trader:
@@ -90,9 +91,8 @@ class Trader:
         #IN ticker, wether the asset should be found on not true means it should not
         #OUT Boolean
         attempt = 1
-        maxAttempts = 5
 
-        while attempt < maxAttempts:
+        while attempt < general_variables.max_attempts_check_position:
             try:
                 #position = ask alpaca wrapper for position
                 currentPrice = position.current_price
@@ -309,13 +309,21 @@ class Trader:
             while True:
                 currentPrice = self.get_current_price(asset)
                 #checking the takeprofit
-                if currentPrice >= takeProfit:
+                if (trend == 'long') and currentPrice >= takeProfit:
                     logging.info('Take profit met at %.2f, getting out at %.2f'%(takeProfit,currentPrice))
                     return True
-                #checking the stoploss
-                elif currentPrice <= stopLoss:
-                    logging.info('Stip loss met at %.2f, getting out at %.2f'%(stopLoss,currentPrice))
+
+                elif (trend == 'short') and currentPrice <= takeProfit:
+                    logging.info('Take profit met at %.2f, getting out at %.2f'%(takeProfit,currentPrice))
                     return True
+
+                elif (trend == 'long') and currentPrice <= stopLoss:
+                    logging.info('Stip loss met at %.2f, getting out at %.2f'%(stopLoss,currentPrice))
+                    return False
+                #checking the stoploss
+                elif (trend == 'short') and currentPrice <= stopLoss:
+                    logging.info('Stip loss met at %.2f, getting out at %.2f'%(stopLoss,currentPrice))
+                    return False
                 #check if stochastic waves crossed around
                 elif self.check_stochastic_crossing(asset,trend):
                     logging.info('Stoch curves crossed at %.2f'%currentPrice)
@@ -326,7 +334,7 @@ class Trader:
                     time.sleep(20) 
                 else:
                     logging.error('Timeout in enter position mode')
-                    return True
+                    return False
         except Exception as e:
             logging.error('Something wrong happened in enter_position_mode function')
             logging.error(e)
@@ -387,12 +395,16 @@ class Trader:
 
             ##enter position mode
             success = self.enter_position_mode(self.asset, trend)
-                #Returns true once we have to get out
-
+               
             #GET OUT
-            #submit order
-                #if false keepy retrying 
+            while True:
+                #submit order
+                #check that position is not there, if false keep retrying 
+                if not self.check_position(self.asset,notFound=True):
+                    break
 
+                time.sleep(10)
+            return success
             #rerun code 
 
             #changing some documentation for testing

@@ -2,11 +2,12 @@
 from traderlib import *
 from logger import * 
 import sys 
-
+import general_variables
+import alpaca_trade_api as tradeapi
 #check our trading account and make general API calls 
-def check_account():
+def check_account(api):
     try: 
-        pass
+        account = api.get_account()
     except Exception as e:
         logging.error('Count not get info')
         logging.info(str(e))
@@ -24,9 +25,12 @@ def clean_open_orders():
     #IN: string 
     #OUT boolean 
 def  main():
+    api = tradeapi.REST(general_variables.Alpaca_api_key_id,general_variables.Alpaca_secret_key,api_version="v2")
+
     #initialise logger 
     initialise_logger()
-    check_account()
+    import pdb; pdb.set_trace()
+    check_account(api)
     clean_open_orders()
     ticker = input("Write the ticker you want to trade with:")
     trader = Trader(ticker)
