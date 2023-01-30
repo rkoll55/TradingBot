@@ -8,11 +8,12 @@ import general_variables
 
 #define asset
 class Trader:
-    def __init__(self, ticker):
+    def __init__(self, ticker,api):
         logging.info('Trader initialized with %s' %ticker)
         self.StopLossMargin = 0.05
         self.TakeProfitMargin = 0.1
         self.asset = ticker
+        self.api = api
 
     def is_tradable(self, ticker):
         #check if tradable: ask the broker/API if asset is tradable 

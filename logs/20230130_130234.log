@@ -1,0 +1,4 @@
+2023-01-30 13:02:36,640 - DEBUG: Starting new HTTPS connection (1): api.alpaca.markets:443
+2023-01-30 13:02:37,367 - DEBUG: https://api.alpaca.markets:443 "GET /v2/account HTTP/1.1" 401 55
+2023-01-30 13:02:37,367 - ERROR: Count not get info
+2023-01-30 13:02:37,368 - INFO: request is not authorized

@@ -1,0 +1,2 @@
+2023-01-30 13:00:38,753 - DEBUG: Starting new HTTPS connection (1): api.alpaca.markets:443
+2023-01-30 13:00:39,516 - DEBUG: https://api.alpaca.markets:443 "GET /v2/account HTTP/1.1" 401 55
