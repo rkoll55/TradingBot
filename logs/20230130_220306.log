@@ -1,0 +1,7 @@
+2023-01-30 22:03:06,819 - DEBUG: Starting new HTTPS connection (1): paper-api.alpaca.markets:443
+2023-01-30 22:03:07,584 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/account HTTP/1.1" 200 880
+2023-01-30 22:03:07,864 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/orders?limit=100&status=open&nested=True HTTP/1.1" 200 2
+2023-01-30 22:03:07,871 - INFO: List of open orders
+2023-01-30 22:03:07,871 - INFO: []
+2023-01-30 22:03:08,102 - DEBUG: https://paper-api.alpaca.markets:443 "DELETE /v2/orders HTTP/1.1" 207 2
+2023-01-30 22:03:08,103 - INFO: closing orders complete

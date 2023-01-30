@@ -95,7 +95,8 @@ class Trader:
 
         while attempt < general_variables.max_attempts_check_position:
             try:
-                #position = ask alpaca wrapper for position
+                import pdb; pdb.set_trace()
+                position = self.api.get_position(asset)
                 currentPrice = position.current_price
                 logging.info('Position checked. Current price is: %.2f' % currentPrice)
                 return True

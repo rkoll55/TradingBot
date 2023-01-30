@@ -16,6 +16,20 @@ def check_account(api):
         logging.error('Count not get info')
         logging.info(str(e))
         sys.exit()
+
+def check_asset_okay(asset,api):
+    #IN: TICKER
+    #OUT: TRUE if it exists and is tradable / FALSE otherwise
+    try: 
+        asset = api.get_asset(asset)
+        if asset.tradable:
+            return True
+        else:
+            return False 
+    except Exception as e:
+        logging.error("Error checking asset")
+        sys.exit()
+
 #close current orders
 def clean_open_orders(api):
     open_orders = api.list_orders(status='open',limit=100,nested=True)
@@ -42,8 +56,10 @@ def  main():
     
     check_account(api)
     clean_open_orders(api)
-    import pdb; pdb.set_trace()
-    ticker = input("Write the ticker you want to trade with:")
+    #ticker = input("Write the ticker you want to trade with:")
+    ticker = 'TSLA'
+  
+    check_asset_okay(ticker,api)
     trader = Trader(ticker,api)
     complete_trading = trader.run()
 
