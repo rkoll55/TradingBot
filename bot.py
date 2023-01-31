@@ -4,6 +4,7 @@ from logger import *
 import sys 
 import general_variables
 import alpaca_trade_api as tradeapi
+from alpaca_trade_api.rest import REST
 #check our trading account and make general API calls 
 def check_account(api):
     try: 
@@ -49,11 +50,10 @@ def clean_open_orders(api):
     #IN: string 
     #OUT boolean 
 def  main():
-    api = tradeapi.REST(general_variables.Alpaca_api_key_id,general_variables.Alpaca_secret_key,general_variables.Alpaca_endpoint)
+    api = tradeapi.REST(general_variables.Alpaca_api_key_id,general_variables.Alpaca_secret_key,general_variables.Alpaca_endpoint,api_version='v2')
  # type: ignore
     #initialise logger 
     initialise_logger()
-    
     check_account(api)
     clean_open_orders(api)
     #ticker = input("Write the ticker you want to trade with:")

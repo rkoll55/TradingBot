@@ -5,6 +5,9 @@ import pandas as pd
 from datetime import datetime 
 from math import ceil 
 import general_variables
+import alpaca_trade_api as tradeapi
+import yfinance as yf 
+
 
 #define asset
 class Trader:
@@ -66,12 +69,18 @@ class Trader:
             sys.exit()
         
 
-    def load_historical_data(self,ticker,interval,limit):
+    def load_historical_data(self,ticker,interval,period):
         #load historical stock data
             #IN: ticker, interval, api, entries, limit 
-            #OUT: Array with stock data 
-        data = self.api.get_barset(ticker,interval,limit)
-        return data  
+            #OUT: Array with stock data
+        try:   
+            ticker = yf.Ticker(ticker)
+            data = ticker.history(interval,period)
+            return data 
+        except Exception as e:
+            logging.error("Something went wrong loading data")
+            sys.exit()
+            
 
 
     def get_open_positions(self, assetId):
@@ -101,7 +110,6 @@ class Trader:
 
         while attempt < general_variables.max_attempts_check_position:
             try:
-                import pdb; pdb.set_trace()
                 position = self.api.get_position(asset)
                 currentPrice = position.current_price
                 logging.info('Position checked. Current price is: %.2f' % currentPrice)
@@ -159,11 +167,13 @@ class Trader:
         maxAttempts = 10
         try:
             while True:
-                data = self.load_historical_data(asset,interval="15Min",limit=5)
+                #50 samples * 30 mins (no weekends and 8 hours a day)
+                data = self.load_historical_data(asset,interval="30m",period='5d')
                 #ask for 30 minute candles
-                ema9 = ti.ema(data,9)
-                ema26 = ti.ema(data,26)
-                ema50 = ti.ema(data,50)
+                  
+                ema9 = ti.ema(data.Close.values,9)
+                ema26 = ti.ema(data.Close.values,26)
+                ema50 = ti.ema(data.Close.values,50)
                 
                 if ema50 > ema26 > ema9:
                     logging.info('Trend detected for %s: long'%asset)
@@ -172,7 +182,7 @@ class Trader:
                     logging.info('Trend detected for %s: short'%asset)
                     return 'short'
                 elif attempt <= maxAttempts:
-                    logging.info('Trend not cl ear for %s: short'%asset)
+                    logging.info('Trend not clear for %s: short'%asset)
                     attempt += 1
                     time.sleep(60)
                 else: 
@@ -187,27 +197,29 @@ class Trader:
     #Get instant trend 
         #IN: 5 minute candles data
         #OUTPUT: UP/ DOWN/ NO TREND
-
-        #ask for 30 minute candles
-        #ema9 = ti.ema(data,9)
-        #ema26 = ti.ema(data,26)
-        #ema50 = ti.ema(data,50)
-        #logging.info('%s instant trend EMAs = [%.2f,%.2f,%.2f]'%(asset,ema9,ema26,ema50))
         attempt = 1
         maxAttempts = 10
 
         try:
 
             while True:
-                if trend == 'long': #and ema9 > ema 26 and ema26 > ema50
+                data = self.load_historical_data(asset,interval="5m",period='1d')
+                ema9 = ti.ema(data.Close.values,9)
+                ema26 = ti.ema(data.Close.values,26)
+                ema50 = ti.ema(data.Close.values,50)
+                logging.info('%s instant trend EMAs = [%.2f,%.2f,%.2f]'%(asset,ema9,ema26,ema50))
+
+                if trend == 'long' and ema9 > ema26 and ema26 > ema50:
                     logging.info('Trend detected for %s: long'%asset)
                     return True
 
-                elif trend == 'short': #and ema9 < ema 26 and ema26 < ema50
+                elif trend == 'short' and ema9 < ema26 and ema26 < ema50:
                     logging.info('Trend detected for %s: short'%asset)
                     return True
+
                 elif attempt <= maxAttempts:
                     time.sleep(60)
+                    attempt += 1
 
                 else:
                     logging.info('No trend detected')
@@ -228,13 +240,14 @@ class Trader:
         try:
             while True:
                 #calculate the RSI
-                #rsi = ti.rsi(data,14)
+                data = self.load_historical_data(asset,interval="5m",period='1d')
+                rsi = ti.rsi(data.Close.values,14)
 
-                if trend == 'long': #and rsi > 50 and rsi <80
+                if trend == 'long' and rsi > 50 and rsi <80:
                     logging.info('Trend detected for %s: long'%asset)
                     return True
 
-                elif trend == 'short': #and rsi < 50 and rsi > 20
+                elif trend == 'short' and rsi < 50 and rsi > 20:
                     logging.info('Trend detected for %s: short'%asset)
                     return True
                 elif attempt <= maxAttempts:
@@ -280,6 +293,7 @@ class Trader:
         try:
             while True:
                 #calculate the Stoch
+                data = self.load_historical_data(asset,interval="5m",period='1d')
                 stoch_k, stoch_d = ti.stoch(high,low,close,9,6,9)
 
                 if trend == 'long' and (stoch_k > stoch_d) and (stoch_k < 80) and (stoch_d < 80): 
@@ -370,7 +384,7 @@ class Trader:
                     logging.info('No general trend found')
                     return False
 
-                
+                          
                 #Confirm instant trend
                 if not self.get_instant_trend(self.asset,trend):
                     logging.info("instant trend not confirmed, going back")
@@ -386,11 +400,14 @@ class Trader:
                     logging.info("stochastic not confirmed, going back")
                 # IF FAILED GO BACK TO POINT B
                     continue
-                logging.info("all filtering passed")
+                #logging.info("all filtering passed")
+                
                 break
             #Gets the current price
-            self.currentPrice = self.get_current_price(self.asset)
-            sharesQuantity = self.get_shares_amount(self.currentPrice)
+            #self.currentPrice = self.get_current_price(self.asset)
+            import pdb; pdb.set_trace()
+            self.current_price = float(self.load_historical_data(self.asset, interval='1min', period='1d').Close.values)
+            sharesQuantity = self.get_shares_amount(self.current_price)
 
             #SUBMIT ORDER
             # submit order: interact with broker API
