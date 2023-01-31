@@ -75,25 +75,12 @@ class Trader:
             #OUT: Array with stock data
         try:   
             ticker = yf.Ticker(ticker)
-            import pdb; pdb.set_trace()
             data = ticker.history(period,interval)
             return data 
         except Exception as e:
             logging.error("Something went wrong loading data")
             sys.exit()
             
-
-
-    def get_open_positions(self, assetId):
-        #get open positions
-            #IN: ticker 
-            #OUT: boolean 
-        #positions = ask alpaca wrapper for list of open positions 
-        for position in positions:
-            if position.symbol == assetId:
-                return True
-            else:
-                return False
 
     #submit order: gets our order throught the API 
         #IN order data, order type
@@ -172,11 +159,10 @@ class Trader:
                 #50 samples * 30 mins (no weekends and 8 hours a day)
                 data = self.load_historical_data(asset,interval="30m",period='5d')
                 #ask for 30 minute candles
-                  
-                ema9 = ti.ema(data.Close.values,9)
-                ema26 = ti.ema(data.Close.values,26)
-                ema50 = ti.ema(data.Close.values,50)
-                
+                ema9 = ti.ema(data.Close.values,9)[-1]
+                ema26 = ti.ema(data.Close.values,26)[-1]
+                ema50 = ti.ema(data.Close.values,50)[-1]
+                import pdb; pdb.set_trace()
                 if ema50 > ema26 > ema9:
                     logging.info('Trend detected for %s: long'%asset)
                     return 'long'
@@ -186,7 +172,7 @@ class Trader:
                 elif attempt <= maxAttempts:
                     logging.info('Trend not clear for %s: short'%asset)
                     attempt += 1
-                    time.sleep(60)
+                    time.sleep(60*5)
                 else: 
                     logging.info('Trend not detected for %s'%asset)
                     return False
@@ -206,9 +192,9 @@ class Trader:
 
             while True:
                 data = self.load_historical_data(asset,interval="5m",period='1d')
-                ema9 = ti.ema(data.Close.values,9)
-                ema26 = ti.ema(data.Close.values,26)
-                ema50 = ti.ema(data.Close.values,50)
+                ema9 = ti.ema(data.Close.values,9)[-1]
+                ema26 = ti.ema(data.Close.values,26)[-1]
+                ema50 = ti.ema(data.Close.values,50)[-1]
                 logging.info('%s instant trend EMAs = [%.2f,%.2f,%.2f]'%(asset,ema9,ema26,ema50))
 
                 if trend == 'long' and ema9 > ema26 and ema26 > ema50:
@@ -243,7 +229,7 @@ class Trader:
             while True:
                 #calculate the RSI
                 data = self.load_historical_data(asset,interval="5m",period='1d')
-                rsi = ti.rsi(data.Close.values,14)
+                rsi = ti.rsi(data.Close.values,14)[-1]
 
                 if trend == 'long' and rsi > 50 and rsi <80:
                     logging.info('Trend detected for %s: long'%asset)
@@ -400,6 +386,7 @@ class Trader:
                 # IF FAILED GO BACK TO POINT B
                     continue
                 #Confirm RSI 
+               
                 if not self.get_rsi(self.asset,trend):
                     logging.info("rsi not confirmed, going back")
                 # IF FAILED GO BACK TO POINT B
@@ -413,11 +400,14 @@ class Trader:
                 
                 break
             #Gets the current price
-            self.currentPrice = round(float(self.load_historical_data(ticker,interval='1min',period='1d').Close.values),2)
+        
+            currentPrice = self.load_historical_data(self.asset,interval='5m',period='1d').Close.values[-1]
+            self.currentPrice = round(float(currentPrice),2)
 
-            self.current_price = float(self.load_historical_data(self.asset, interval='1min', period='1d').Close.values)
-            sharesQuantity = self.get_shares_amount(self.current_price)
+            # decide the total amount to invest
+            sharesQty = self.get_shares_amount(self.currentPrice)
 
+            logging.info('\nDESIRED ENTRY PRICE: %.2f' % self.currentPrice)
             #SUBMIT ORDER
             # submit order: interact with broker API
                 #if False, abort - go back to start
