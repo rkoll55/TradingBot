@@ -21,7 +21,7 @@ class Trader:
             #OUT: Boolean 
         try:
             #Get asset from alpaca wrapper
-            if not asset.tradable:
+            if not ticker.tradable:
                 logging.info("Asset %s is not tradable" %ticker)
                 return False
             logging.info("Asset %s is not tradable" %ticker)
@@ -66,7 +66,13 @@ class Trader:
             sys.exit()
         
 
-    #load historical data ####
+    def load_historical_data(self,ticker,interval,limit):
+        #load historical stock data
+            #IN: ticker, interval, api, entries, limit 
+            #OUT: Array with stock data 
+        data = self.api.get_barset(ticker,interval,limit)
+        return data  
+
 
     def get_open_positions(self, assetId):
         #get open positions
@@ -153,24 +159,25 @@ class Trader:
         maxAttempts = 10
         try:
             while True:
-
+                data = self.load_historical_data(asset,interval="15Min",limit=5)
                 #ask for 30 minute candles
-                #ema9 = ti.ema(data,9)
-                #ema26 = ti.ema(data,26)
-                #ema50 = ti.ema(data,50)
+                ema9 = ti.ema(data,9)
+                ema26 = ti.ema(data,26)
+                ema50 = ti.ema(data,50)
                 
-            #Check EMAs relative position if ema50 > ema26 > ema9
-                logging.info('Trend detected for %s: long'%asset)
-                return 'long'
-                #if ema50 < ema26 < ema9
-                logging.info('Trend detected for %s: short'%asset)
-                return 'short'
-                #if attempts <= maxAttemptL
-                logging.info('Trend not cl ear for %s: short'%asset)
-                time.sleep(60)
-                #else 
-                logging.info('Trend not detected for %s'%asset)
-                return False
+                if ema50 > ema26 > ema9:
+                    logging.info('Trend detected for %s: long'%asset)
+                    return 'long'
+                elif ema50 < ema26 < ema9:
+                    logging.info('Trend detected for %s: short'%asset)
+                    return 'short'
+                elif attempt <= maxAttempts:
+                    logging.info('Trend not cl ear for %s: short'%asset)
+                    attempt += 1
+                    time.sleep(60)
+                else: 
+                    logging.info('Trend not detected for %s'%asset)
+                    return False
         except Exception as e:
             logging.error("Something went wrong with get general trend")
             logging.error(e)
