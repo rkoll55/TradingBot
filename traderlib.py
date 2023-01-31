@@ -75,7 +75,8 @@ class Trader:
             #OUT: Array with stock data
         try:   
             ticker = yf.Ticker(ticker)
-            data = ticker.history(interval,period)
+            import pdb; pdb.set_trace()
+            data = ticker.history(period,interval)
             return data 
         except Exception as e:
             logging.error("Something went wrong loading data")
@@ -148,6 +149,7 @@ class Trader:
         while attempt < maxAttempts:
             try:
                 #position = ask alpaca wrapper for position
+                position = self.api.get_position(asset)
                 currentPrice = position.current_price
                 logging.info('Position checked. Current price is: %.2f' % currentPrice)
                 return currentPrice
@@ -269,8 +271,13 @@ class Trader:
             #OUT: Boolean 
         #Get stochastic values 
         #Ask for 5 minute candles
-        stoch_k, stoch_d = ti.stoch(high,low,close,9,6,9)
+    
         try:
+            data = self.load_historical_data(asset,interval="5m",period='1d')
+            stoch_k, stoch_d = ti.stoch(data.High.values,data.Low.values,data.Close.values,9,6,9)
+            stoch_k = stoch_k[-1]
+            stoch_d = stoch_d[-1]
+
             if trend == 'long' and (stoch_k <= stoch_d):
                 logging.info("stoch curves crossed")
                 return True 
@@ -294,7 +301,9 @@ class Trader:
             while True:
                 #calculate the Stoch
                 data = self.load_historical_data(asset,interval="5m",period='1d')
-                stoch_k, stoch_d = ti.stoch(high,low,close,9,6,9)
+                stoch_k, stoch_d = ti.stoch(data.High.values,data.Low.values,data.Close.values,9,6,9)
+                stoch_k = stoch_k[-1]
+                stoch_d = stoch_d[-1]
 
                 if trend == 'long' and (stoch_k > stoch_d) and (stoch_k < 80) and (stoch_d < 80): 
                     logging.info('%s stochastic = [%.2f,%.2f]'%(asset,stoch_k, stoch_d))
@@ -404,8 +413,8 @@ class Trader:
                 
                 break
             #Gets the current price
-            #self.currentPrice = self.get_current_price(self.asset)
-            import pdb; pdb.set_trace()
+            self.currentPrice = round(float(self.load_historical_data(ticker,interval='1min',period='1d').Close.values),2)
+
             self.current_price = float(self.load_historical_data(self.asset, interval='1min', period='1d').Close.values)
             sharesQuantity = self.get_shares_amount(self.current_price)
 

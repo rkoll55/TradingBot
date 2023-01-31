@@ -1,0 +1,14 @@
+2023-01-31 15:39:30,362 - DEBUG: Starting new HTTPS connection (1): paper-api.alpaca.markets:443
+2023-01-31 15:39:31,132 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/account HTTP/1.1" 200 880
+2023-01-31 15:39:31,378 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/orders?limit=100&status=open&nested=True HTTP/1.1" 200 2
+2023-01-31 15:39:31,378 - INFO: List of open orders
+2023-01-31 15:39:31,379 - INFO: []
+2023-01-31 15:39:31,615 - DEBUG: https://paper-api.alpaca.markets:443 "DELETE /v2/orders HTTP/1.1" 207 2
+2023-01-31 15:39:31,616 - INFO: closing orders complete
+2023-01-31 15:39:31,856 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/assets/TSLA HTTP/1.1" 200 282
+2023-01-31 15:39:31,857 - INFO: Trader initialized with TSLA
+2023-01-31 15:39:32,091 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/positions/TSLA HTTP/1.1" 404 53
+2023-01-31 15:39:32,092 - INFO: Position not found, this is good
+2023-01-31 15:39:40,270 - DEBUG: Starting new HTTPS connection (1): query2.finance.yahoo.com:443
+2023-01-31 15:39:40,512 - DEBUG: https://query2.finance.yahoo.com:443 "GET /v8/finance/chart/TSLA?range=30m&interval=5d&includePrePost=False&events=div%2Csplits%2CcapitalGains HTTP/1.1" 200 934
+2023-01-31 15:40:24,404 - ERROR: Something went wrong loading data
