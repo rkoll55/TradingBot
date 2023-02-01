@@ -1,9 +1,0 @@
-2023-01-29 23:16:42,330 - INFO: List of open orders
-2023-01-29 23:16:42,330 - INFO: closing orders complete
-2023-01-29 23:16:49,619 - INFO: Trader initialized with AAPL
-2023-01-29 23:16:49,619 - INFO: Position not found, this is good
-2023-01-29 23:16:49,619 - INFO: Trend detected for AAPL: long
-2023-01-29 23:16:49,620 - INFO: Trend detected for AAPL: long
-2023-01-29 23:16:49,620 - INFO: Trend detected for AAPL: long
-2023-01-29 23:16:49,620 - ERROR: Something went wrong with stoch analysis
-2023-01-29 23:16:49,620 - ERROR: name 'high' is not defined

@@ -1,0 +1,66 @@
+2023-02-01 13:22:29,527 - DEBUG: Starting new HTTPS connection (1): paper-api.alpaca.markets:443
+2023-02-01 13:22:30,454 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/account HTTP/1.1" 200 906
+2023-02-01 13:22:30,721 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/orders?limit=100&status=open&nested=True HTTP/1.1" 200 789
+2023-02-01 13:22:30,721 - INFO: List of open orders
+2023-02-01 13:22:30,721 - INFO: [Order({   'asset_class': 'us_equity',
+    'asset_id': '8ccae427-5dd0-45b3-b5fe-7ba5e422c766',
+    'canceled_at': None,
+    'client_order_id': 'aa587e33-f560-4879-be9f-3bd4fe8dfc3b',
+    'created_at': '2023-02-01T03:20:13.020179484Z',
+    'expired_at': None,
+    'extended_hours': False,
+    'failed_at': None,
+    'filled_at': None,
+    'filled_avg_price': None,
+    'filled_qty': '0',
+    'hwm': None,
+    'id': 'eb2c01f3-3c16-4429-9177-0d2620aeace0',
+    'legs': None,
+    'limit_price': '156',
+    'notional': None,
+    'order_class': '',
+    'order_type': 'limit',
+    'qty': '5',
+    'replaced_at': None,
+    'replaced_by': None,
+    'replaces': None,
+    'side': 'sell',
+    'source': None,
+    'status': 'accepted',
+    'stop_price': None,
+    'submitted_at': '2023-02-01T03:20:13.019544594Z',
+    'subtag': None,
+    'symbol': 'TSLA',
+    'time_in_force': 'gtc',
+    'trail_percent': None,
+    'trail_price': None,
+    'type': 'limit',
+    'updated_at': '2023-02-01T03:20:13.020179484Z'})]
+2023-02-01 13:22:30,721 - INFO: Order eb2c01f3-3c16-4429-9177-0d2620aeace0 closed
+2023-02-01 13:22:31,005 - DEBUG: https://paper-api.alpaca.markets:443 "DELETE /v2/orders HTTP/1.1" 207 60
+2023-02-01 13:22:31,005 - INFO: closing orders complete
+2023-02-01 13:22:31,273 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/assets/TSLA HTTP/1.1" 200 282
+2023-02-01 13:22:31,273 - INFO: Trader initialized with TSLA
+2023-02-01 13:22:31,557 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/positions/TSLA HTTP/1.1" 404 53
+2023-02-01 13:22:31,557 - INFO: Position not found, this is good
+2023-02-01 13:22:31,557 - DEBUG: Starting new HTTPS connection (1): query2.finance.yahoo.com:443
+2023-02-01 13:22:31,966 - DEBUG: https://query2.finance.yahoo.com:443 "GET /v8/finance/chart/TSLA?range=5d&interval=15m&includePrePost=False&events=div%2Csplits%2CcapitalGains HTTP/1.1" 200 None
+2023-02-01 13:22:32,075 - INFO: Trend detected for TSLA: short
+2023-02-01 13:22:32,091 - DEBUG: Starting new HTTPS connection (1): query2.finance.yahoo.com:443
+2023-02-01 13:22:32,374 - DEBUG: https://query2.finance.yahoo.com:443 "GET /v8/finance/chart/TSLA?range=1d&interval=5m&includePrePost=False&events=div%2Csplits%2CcapitalGains HTTP/1.1" 200 2575
+2023-02-01 13:22:32,719 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/account HTTP/1.1" 200 880
+2023-02-01 13:22:32,719 - INFO: 
+DESIRED ENTRY PRICE: 173.22
+2023-02-01 13:22:32,987 - DEBUG: https://paper-api.alpaca.markets:443 "POST /v2/orders HTTP/1.1" 200 787
+2023-02-01 13:23:04,812 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/positions/TSLA HTTP/1.1" 404 53
+2023-02-01 13:23:04,812 - INFO: Waiting for position to be found
+2023-02-01 13:23:10,051 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/positions/TSLA HTTP/1.1" 404 53
+2023-02-01 13:23:10,051 - INFO: Waiting for position to be found
+2023-02-01 13:23:15,361 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/positions/TSLA HTTP/1.1" 404 53
+2023-02-01 13:23:15,361 - INFO: Waiting for position to be found
+2023-02-01 13:23:20,602 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/positions/TSLA HTTP/1.1" 404 53
+2023-02-01 13:23:20,603 - INFO: Waiting for position to be found
+2023-02-01 13:23:25,606 - INFO: Position not found
+2023-02-01 13:25:25,410 - DEBUG: Resetting dropped connection: paper-api.alpaca.markets
+2023-02-01 13:25:26,141 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/positions/TSLA HTTP/1.1" 404 53
+2023-02-01 13:25:26,141 - INFO: Position not found, this is good

@@ -81,11 +81,37 @@ class Trader:
             logging.error("Something went wrong loading data")
             sys.exit()
             
-
+    def submit_order(self,type,trend,ticker,quantity,currentPrice):
     #submit order: gets our order throught the API 
         #IN order data, order type
         #OUT Boolean 
+        if trend == 'long':
+            side = 'buy'
+            limitPrice =  round(currentPrice + currentPrice*0.03,2)
+        elif trend == 'short':
+            side = 'sell'
+            limitPrice = round(currentPrice - currentPrice*0.03,2)
+        else:
+            logging.error("Weird trend entered")
+            sys.exit()
+        try:
+            
+            self.api.submit_order( 
+                symbol = ticker, 
+                qty = quantity,
+                side =side, 
+                type=type,
+                time_in_force = 'gtc',
+                limit_price=limitPrice
+            )
+            import pdb; pdb.set_trace()
+            return True
+        except Exception as e:
+            logging.error("Could not sumbit order cause of error")
+            sys.exit()
 
+    def cancel_order(self):
+        pass
     #Cancel order
         #IN order data
         #OUT Boolean
@@ -115,16 +141,30 @@ class Trader:
         return False 
 
     def get_shares_amount(self,assetPrice):
+        maxSpendEquity = 1000
         #works out number of shares to buy and sell
         #IN: assetProce
         #OUT: number of shares
+        
+        try:
+            account = self.api.get_account()
+            equity = account.equity
+            totalShares = int(maxSpendEquity / assetPrice)
+            
+            if int(equity) - totalShares*assetPrice > 0:
+                return totalShares
+            else:
+                logging.error("You are too poor to afford this")
+                sys.exit()
 
+        except Exception as e:
+            logging.error("Could not find equity")
+            sys.exit()
         #define max to spend
-        maxSpendEquity = 1000
         #calculate total equity from Alpaca API
         #calculate the number of shares
-        totalShares = int(maxSpendEquity / assetPrice)
-        return totalShares
+        
+
 
     def get_current_price(self,asset):
         #Get the current price of the open position
@@ -162,7 +202,7 @@ class Trader:
                 ema9 = ti.ema(data.Close.values,9)[-1]
                 ema26 = ti.ema(data.Close.values,26)[-1]
                 ema50 = ti.ema(data.Close.values,50)[-1]
-                import pdb; pdb.set_trace()
+                
                 if ema50 > ema26 > ema9:
                     logging.info('Trend detected for %s: long'%asset)
                     return 'long'
@@ -196,7 +236,7 @@ class Trader:
                 ema26 = ti.ema(data.Close.values,26)[-1]
                 ema50 = ti.ema(data.Close.values,50)[-1]
                 logging.info('%s instant trend EMAs = [%.2f,%.2f,%.2f]'%(asset,ema9,ema26,ema50))
-
+                
                 if trend == 'long' and ema9 > ema26 and ema26 > ema50:
                     logging.info('Trend detected for %s: long'%asset)
                     return True
@@ -240,7 +280,7 @@ class Trader:
                     return True
                 elif attempt <= maxAttempts:
                     time.sleep(60)
-
+                    attempt += 1
                 else:
                     logging.info('No trend detected')
                     return False
@@ -285,6 +325,7 @@ class Trader:
 
         try:
             while True:
+                
                 #calculate the Stoch
                 data = self.load_historical_data(asset,interval="5m",period='1d')
                 stoch_k, stoch_d = ti.stoch(data.High.values,data.Low.values,data.Close.values,9,6,9)
@@ -299,8 +340,8 @@ class Trader:
                     logging.info('%s stochastic = [%.2f,%.2f]'%(asset,stoch_k, stoch_d))
                     return True
                 elif attempt <= maxAttempts:
-                    time.sleep(10)
-
+                    time.sleep(60*3)
+                    attempt += 1
                 else:
                     logging.info('No trend detected')
                     return False
@@ -379,39 +420,43 @@ class Trader:
                     logging.info('No general trend found')
                     return False
 
-                          
+                '''          
                 #Confirm instant trend
                 if not self.get_instant_trend(self.asset,trend):
                     logging.info("instant trend not confirmed, going back")
                 # IF FAILED GO BACK TO POINT B
                     continue
                 #Confirm RSI 
-               
+                
+
                 if not self.get_rsi(self.asset,trend):
                     logging.info("rsi not confirmed, going back")
                 # IF FAILED GO BACK TO POINT B
                     continue
                 #Confirm stochastic trend
+                
                 if not self.get_stochastic(self.asset,trend):
                     logging.info("stochastic not confirmed, going back")
                 # IF FAILED GO BACK TO POINT B
                     continue
                 #logging.info("all filtering passed")
-                
+                '''
                 break
             #Gets the current price
         
             currentPrice = self.load_historical_data(self.asset,interval='5m',period='1d').Close.values[-1]
+            print(currentPrice)
             self.currentPrice = round(float(currentPrice),2)
 
             # decide the total amount to invest
             sharesQty = self.get_shares_amount(self.currentPrice)
 
             logging.info('\nDESIRED ENTRY PRICE: %.2f' % self.currentPrice)
+
             #SUBMIT ORDER
             # submit order: interact with broker API
                 #if False, abort - go back to start
-
+            self.submit_order('limit',trend,self.asset,sharesQty,self.currentPrice)
             #check position see if the position exists
             if not self.check_position(self.asset):
                 #cancel the pending order
