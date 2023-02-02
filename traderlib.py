@@ -94,16 +94,30 @@ class Trader:
         else:
             logging.error("Weird trend entered")
             sys.exit()
+
         try:
-            
-            order = self.api.submit_order( 
-                symbol = ticker, 
-                qty = quantity,
-                side =side, 
-                type=type,
-                time_in_force = 'gtc',
-                limit_price=limitPrice
-            )
+            if type == "limit":
+                order = self.api.submit_order( 
+                    symbol = ticker, 
+                    qty = quantity,
+                    side =side, 
+                    type=type,
+                    time_in_force = 'gtc',
+                    limit_price=limitPrice
+                )
+            elif type == 'market':
+                order = self.api.submit_order(
+                    symbol=ticker,
+                    qty=quantity,
+                    side=side,
+                    type=type,
+                    time_in_force='gtc'
+                )
+
+            else:
+                logging.error("weird order type was entered")
+                sys.exit()
+
             self.client_order_id = order.id
             
             return True
@@ -140,9 +154,10 @@ class Trader:
             try:
                 position = self.api.get_position(asset)
                 currentPrice = position.current_price
-                logging.info('Position checked. Current price is: %.2f' % currentPrice)
+                logging.info('Position checked. Current price is: %.2f' % float(currentPrice))
                 return True
-            except: 
+            except Exception as e:
+                print(e) 
                 if notFound:
                     logging.info('Position not found, this is good')
                     return False
@@ -190,9 +205,9 @@ class Trader:
 
         while attempt < maxAttempts:
             try:
-                #position = ask alpaca wrapper for position
+                
                 position = self.api.get_position(asset)
-                currentPrice = position.current_price
+                currentPrice = float(position.current_price)
                 logging.info('Position checked. Current price is: %.2f' % currentPrice)
                 return currentPrice
             except: 
@@ -203,6 +218,29 @@ class Trader:
         logging.error('Position not found')
         return False 
 
+    def get_avg_entry_price(self, asset):
+        #Get the current price of the open position
+        # IN: Ticker
+        # OUT: price
+        attempt = 1
+        maxAttempts = 5
+
+        while attempt < maxAttempts:
+            try:
+                
+                position = self.api.get_position(asset)
+                currentPrice = float(position.avg_entry_price)
+                logging.info('Position checked. Current price is: %.2f' % currentPrice)
+                return currentPrice
+            except: 
+                logging.info('Position cannot be found, cannot check price, waiting')
+                time.sleep(5)
+                attempt += 1
+        
+        logging.error('Position not found')
+        return False 
+
+        
     def get_general_trend(self, asset):
     #Get general trend 
         #IN: 30 minute candles data
@@ -373,12 +411,12 @@ class Trader:
         #if check stop loss -> get out 
         #if check stoch crossing (pull 5 minute candle data) -> get out
 
-        #entryprice = ask alpaca
+        entryprice = self.get_avg_entry_price(asset)
         takeProfit = self.set_takeprofit(entryprice, trend)
         stopLoss = self.set_stoploss(entryprice, trend)
 
         attempt = 1
-        maxAttempts = 1260
+        maxAttempts = 360
         try:
             while True:
                 currentPrice = self.get_current_price(asset)
@@ -406,6 +444,7 @@ class Trader:
                     logging.info('Waiting inside position')
                     logging.info('Current price %.2f'%currentPrice)
                     time.sleep(20) 
+                    attempt += 1
                 else:
                     logging.error('Timeout in enter position mode')
                     return False
@@ -460,6 +499,9 @@ class Trader:
             #Gets the current price
         
             currentPrice = self.load_historical_data(self.asset,interval='5m',period='1d').Close.values[-1]
+            if currentPrice == None:
+                logging.error("the crrent price returned null")
+                sys.exit()
             print(currentPrice)
             self.currentPrice = round(float(currentPrice),2)
 
@@ -473,15 +515,24 @@ class Trader:
                 #if False, abort - go back to start
             self.submit_order('limit',trend,self.asset,sharesQty,self.currentPrice)
             #check position see if the position exists
-           
             if not self.check_position(self.asset):
                 self.cancel_pending_order(self.asset) 
                 #if False, abort - go back to start
                 continue
 
             ##enter position mode
+            import pdb; pdb.set_trace()
             success = self.enter_position_mode(self.asset, trend)
                
+            oppoTrend = "null"
+            if trend == "long":
+                oppoTrend = "short"
+            elif trend == "short":
+                oppoTrend = "long"
+            else:
+               logging.error("trend did not take value of long or short") 
+               sys.exit  
+            self.submit_order('market',oppoTrend,self.asset,sharesQty,self.currentPrice)
             #GET OUT
             while True:
                 #submit order
@@ -489,6 +540,7 @@ class Trader:
                 if not self.check_position(self.asset,notFound=True):
                     break
 
+                logging.error("Closing position not working trying again")
                 time.sleep(10)
             return success
             #rerun code 

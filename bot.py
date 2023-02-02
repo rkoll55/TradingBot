@@ -51,7 +51,7 @@ def clean_open_orders(api):
     #OUT boolean 
 def  main():
     api = tradeapi.REST(general_variables.Alpaca_api_key_id,general_variables.Alpaca_secret_key,general_variables.Alpaca_endpoint,api_version='v2')
- # type: ignore
+ # type: ignore # type: ignore
     #initialise logger 
     initialise_logger()
     check_account(api)

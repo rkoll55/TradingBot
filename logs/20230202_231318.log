@@ -1,0 +1,26 @@
+2023-02-02 23:13:18,978 - DEBUG: Starting new HTTPS connection (1): paper-api.alpaca.markets:443
+2023-02-02 23:13:19,962 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/account HTTP/1.1" 200 930
+2023-02-02 23:13:20,202 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/orders?limit=100&status=open&nested=True HTTP/1.1" 200 2
+2023-02-02 23:13:20,202 - INFO: List of open orders
+2023-02-02 23:13:20,203 - INFO: []
+2023-02-02 23:13:20,437 - DEBUG: https://paper-api.alpaca.markets:443 "DELETE /v2/orders HTTP/1.1" 207 2
+2023-02-02 23:13:20,438 - INFO: closing orders complete
+2023-02-02 23:13:20,669 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/assets/TSLA HTTP/1.1" 200 282
+2023-02-02 23:13:20,669 - INFO: Trader initialized with TSLA
+2023-02-02 23:13:20,900 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/positions/TSLA HTTP/1.1" 200 491
+2023-02-02 23:13:20,902 - INFO: Position not found, this is good
+2023-02-02 23:13:20,906 - DEBUG: Starting new HTTPS connection (1): query2.finance.yahoo.com:443
+2023-02-02 23:13:21,162 - DEBUG: https://query2.finance.yahoo.com:443 "GET /v8/finance/chart/TSLA?range=5d&interval=15m&includePrePost=False&events=div%2Csplits%2CcapitalGains HTTP/1.1" 200 None
+2023-02-02 23:13:21,355 - INFO: Trend detected for TSLA: short
+2023-02-02 23:13:21,357 - DEBUG: Starting new HTTPS connection (1): query2.finance.yahoo.com:443
+2023-02-02 23:13:21,579 - DEBUG: https://query2.finance.yahoo.com:443 "GET /v8/finance/chart/TSLA?range=1d&interval=5m&includePrePost=False&events=div%2Csplits%2CcapitalGains HTTP/1.1" 200 2661
+2023-02-02 23:13:21,842 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/account HTTP/1.1" 200 931
+2023-02-02 23:13:21,842 - INFO: 
+DESIRED ENTRY PRICE: 181.41
+2023-02-02 23:13:22,087 - DEBUG: https://paper-api.alpaca.markets:443 "POST /v2/orders HTTP/1.1" 200 790
+2023-02-02 23:13:22,319 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/positions/TSLA HTTP/1.1" 200 491
+2023-02-02 23:13:22,320 - INFO: Waiting for position to be found
+2023-02-02 23:13:27,586 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/positions/TSLA HTTP/1.1" 200 492
+2023-02-02 23:13:27,586 - INFO: Waiting for position to be found
+2023-02-02 23:13:32,827 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/positions/TSLA HTTP/1.1" 200 490
+2023-02-02 23:13:32,827 - INFO: Waiting for position to be found
