@@ -1,0 +1,18 @@
+2023-02-02 16:16:34,082 - DEBUG: Starting new HTTPS connection (1): paper-api.alpaca.markets:443
+2023-02-02 16:16:34,809 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/account HTTP/1.1" 200 925
+2023-02-02 16:16:35,027 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/orders?limit=100&status=open&nested=True HTTP/1.1" 200 2
+2023-02-02 16:16:35,043 - INFO: List of open orders
+2023-02-02 16:16:35,043 - INFO: []
+2023-02-02 16:16:35,277 - DEBUG: https://paper-api.alpaca.markets:443 "DELETE /v2/orders HTTP/1.1" 207 2
+2023-02-02 16:16:35,278 - INFO: closing orders complete
+2023-02-02 16:16:35,518 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/assets/TSLA HTTP/1.1" 200 282
+2023-02-02 16:16:35,518 - INFO: Trader initialized with TSLA
+2023-02-02 16:16:35,833 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/positions/TSLA HTTP/1.1" 200 492
+2023-02-02 16:16:35,834 - INFO: Position not found, this is good
+2023-02-02 16:16:35,836 - DEBUG: Starting new HTTPS connection (1): query2.finance.yahoo.com:443
+2023-02-02 16:16:36,247 - DEBUG: https://query2.finance.yahoo.com:443 "GET /v8/finance/chart/TSLA?range=5d&interval=15m&includePrePost=False&events=div%2Csplits%2CcapitalGains HTTP/1.1" 200 None
+2023-02-02 16:16:36,347 - INFO: Trend detected for TSLA: short
+2023-02-02 16:16:36,357 - DEBUG: Starting new HTTPS connection (1): query2.finance.yahoo.com:443
+2023-02-02 16:16:36,845 - DEBUG: https://query2.finance.yahoo.com:443 "GET /v8/finance/chart/TSLA?range=1d&interval=5m&includePrePost=False&events=div%2Csplits%2CcapitalGains HTTP/1.1" 200 2672
+2023-02-02 16:16:37,187 - DEBUG: https://paper-api.alpaca.markets:443 "GET /v2/account HTTP/1.1" 200 925
+2023-02-02 16:16:37,187 - ERROR: Could not find equity

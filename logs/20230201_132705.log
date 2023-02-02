@@ -52,3 +52,4 @@
 2023-02-01 13:27:08,366 - INFO: 
 DESIRED ENTRY PRICE: 173.22
 2023-02-01 13:27:08,593 - DEBUG: https://paper-api.alpaca.markets:443 "POST /v2/orders HTTP/1.1" 200 787
+2023-02-02 12:04:14,851 - ERROR: Could not sumbit order cause of error

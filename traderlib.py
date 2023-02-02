@@ -96,7 +96,7 @@ class Trader:
             sys.exit()
         try:
             
-            self.api.submit_order( 
+            order = self.api.submit_order( 
                 symbol = ticker, 
                 qty = quantity,
                 side =side, 
@@ -104,17 +104,31 @@ class Trader:
                 time_in_force = 'gtc',
                 limit_price=limitPrice
             )
-            import pdb; pdb.set_trace()
+            self.client_order_id = order.id
+            
             return True
         except Exception as e:
             logging.error("Could not sumbit order cause of error")
             sys.exit()
 
-    def cancel_order(self):
-        pass
-    #Cancel order
+    def cancel_pending_order(self,ticker):
+        attempt = 1
+        maxAttempts = 10
+        #Cancel order
         #IN order data
         #OUT Boolean
+        while attempt <= maxAttempts:
+            try:
+                self.api.cancel_order(self.client_order_id)
+                logging.info("Order cancelled")
+                return True 
+            except Exception as e:
+                logging.info("something i not working while cancelling waiting")
+                time.sleep(6)
+                attempt += 1
+        logging.error("Could not cancel the order")
+        self.api.cancel_all_orders()
+        return False
          
     def check_position(self, asset, notFound=False):
     #Check Position (whether its open or not)
@@ -147,11 +161,12 @@ class Trader:
         #OUT: number of shares
         
         try:
+            
             account = self.api.get_account()
             equity = account.equity
             totalShares = int(maxSpendEquity / assetPrice)
             
-            if int(equity) - totalShares*assetPrice > 0:
+            if float(equity) - totalShares*assetPrice > 0:
                 return totalShares
             else:
                 logging.error("You are too poor to afford this")
@@ -458,10 +473,11 @@ class Trader:
                 #if False, abort - go back to start
             self.submit_order('limit',trend,self.asset,sharesQty,self.currentPrice)
             #check position see if the position exists
+           
             if not self.check_position(self.asset):
-                #cancel the pending order
-                continue
+                self.cancel_pending_order(self.asset) 
                 #if False, abort - go back to start
+                continue
 
             ##enter position mode
             success = self.enter_position_mode(self.asset, trend)
