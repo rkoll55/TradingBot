@@ -56,8 +56,7 @@ def  main():
     initialise_logger()
     check_account(api)
     clean_open_orders(api)
-    #ticker = input("Write the ticker you want to trade with:")
-    ticker = 'TSLA'
+    ticker = input("Write the ticker you want to trade with:")
   
     check_asset_okay(ticker,api)
     trader = Trader(ticker,api)
