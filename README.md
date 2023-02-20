@@ -12,7 +12,7 @@ The bot also features a logging system to keep track of its performance and deci
 
 The bot works by connecting to Alpaca API and pulling data for an active account.  
 
-# Built With
+## Built With
 
 Python - The programming language used
 
