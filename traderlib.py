@@ -474,7 +474,7 @@ class Trader:
                     logging.info('No general trend found')
                     return False
 
-                '''          
+                          
                 #Confirm instant trend
                 if not self.get_instant_trend(self.asset,trend):
                     logging.info("instant trend not confirmed, going back")
@@ -494,7 +494,7 @@ class Trader:
                 # IF FAILED GO BACK TO POINT B
                     continue
                 #logging.info("all filtering passed")
-                '''
+                
                 break
             #Gets the current price
         
@@ -522,6 +522,8 @@ class Trader:
 
             ##enter position mode
             import pdb; pdb.set_trace()
+
+
             success = self.enter_position_mode(self.asset, trend)
                
             oppoTrend = "null"
@@ -532,10 +534,11 @@ class Trader:
             else:
                logging.error("trend did not take value of long or short") 
                sys.exit  
+
             self.submit_order('market',oppoTrend,self.asset,sharesQty,self.currentPrice)
             #GET OUT
             while True:
-                #submit order
+                
                 #check that position is not there, if false keep retrying 
                 if not self.check_position(self.asset,notFound=True):
                     break
