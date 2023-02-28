@@ -4,7 +4,9 @@ An algorithmic trading bot I made in my free time. The bot uses technical analys
 
 
 Stochastic analysis
+
 Moving Averages
+
 Relative Strength Index (RSI)
 
 
